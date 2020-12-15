@@ -25,16 +25,8 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/HoneyLuka/KEPAd.git', :tag => s.version.to_s }
 
   s.static_framework = true
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '11.0'
 
-  s.source_files = 'KEPAd/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'KEPAd' => ['KEPAd/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'Firebase/Analytics'
   s.dependency 'Firebase/AdMob'
 end
