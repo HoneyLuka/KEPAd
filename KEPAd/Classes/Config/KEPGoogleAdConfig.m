@@ -39,11 +39,11 @@
 {
     _nativeAdPreloadLimit = 3;
     _nativeAdPreloadErrorLimit = 3;
-    _nativeAdPreloadRelaunchTimeInterval = 15;
+    _nativeAdPreloadRelaunchTimeInterval = 30;
     
     _interstitialPreloadLimit = 3;
     _interstitialPreloadErrorLimit = 3;
-    _interstitialPreloadRelaunchTimeInterval = 15;
+    _interstitialPreloadRelaunchTimeInterval = 30;
 }
 
 @end

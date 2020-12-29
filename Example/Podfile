@@ -1,9 +1,10 @@
 use_frameworks!
 
-platform :ios, '9.0'
+platform :ios, '11.0'
 
 target 'KEPAd_Example' do
   pod 'KEPAd', :path => '../'
+  pod 'LKFoundation', :git => 'https://www.github.com/honeyluka/LKFoundation.git'
 
   target 'KEPAd_Tests' do
     inherit! :search_paths

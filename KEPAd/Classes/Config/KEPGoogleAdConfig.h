@@ -59,7 +59,7 @@
 @property (nonatomic, assign) NSInteger nativeAdPreloadErrorLimit;
 
 /**
- 原生广告预加载逻辑暂停后，再次重启的间隔，默认是15秒
+ 原生广告预加载逻辑暂停后，再次重启的间隔，默认是30秒
  */
 @property (nonatomic, assign) NSTimeInterval nativeAdPreloadRelaunchTimeInterval;
 
@@ -86,7 +86,7 @@
 @property (nonatomic, assign) NSInteger interstitialPreloadErrorLimit;
 
 /**
- 插页广告预加载逻辑暂停后，再次重启的间隔，默认是15秒
+ 插页广告预加载逻辑暂停后，再次重启的间隔，默认是30秒
  */
 @property (nonatomic, assign) NSTimeInterval interstitialPreloadRelaunchTimeInterval;
 

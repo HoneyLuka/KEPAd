@@ -31,4 +31,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'Firebase/Analytics'
   s.dependency 'Firebase/AdMob'
+  s.dependency 'LKFoundation'
 end

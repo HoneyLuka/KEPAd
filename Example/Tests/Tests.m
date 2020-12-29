@@ -7,6 +7,7 @@
 //
 
 @import XCTest;
+#import <KEPAd/KEPGoogleAdHeader.h>
 
 @interface Tests : XCTestCase
 
@@ -26,9 +27,10 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)testLog
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    KEPGADIntAdLog(@"test int ad log");
+    KEPGADNativeAdLog(@"test native ad log");
 }
 
 @end

@@ -9,19 +9,10 @@
 #ifndef KEPGoogleAdHeader_h
 #define KEPGoogleAdHeader_h
 
-#if KEPGADDebugLogEnabled
+#import <LKFoundation/LKFoundation.h>
 
-#define KEPGADIntAdLog(fmt, ...) NSLog((@"KEPGoogleIntAd: " fmt), ##__VA_ARGS__)
-#define KEPGADNativeAdLog(fmt, ...) NSLog((@"KEPGoogleNativeAd: " fmt), ##__VA_ARGS__)
-#define KEPGADConsentLog(fmt, ...) NSLog((@"KEPGoogleConsent: " fmt), ##__VA_ARGS__)
-
-#else
-
-#define KEPGADIntAdLog(...)
-#define KEPGADNativeAdLog(...)
-#define KEPGADConsentLog(fmt, ...)
-
-#endif
+#define KEPGADIntAdLog(fmt, ...) LKLogInfo(@"KEPGADIntAd", nil, fmt, ##__VA_ARGS__)
+#define KEPGADNativeAdLog(fmt, ...) LKLogInfo(@"KEPGADNativeAd", nil, fmt, ##__VA_ARGS__)
 
 typedef NS_ENUM(NSUInteger, KEPGoogleAdSourceType) {
     KEPGoogleAdSourceTypeNative,
