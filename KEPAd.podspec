@@ -30,6 +30,6 @@ Pod::Spec.new do |s|
   s.source_files = 'KEPAd/Classes/**/*'
 
   s.dependency 'Firebase/Analytics'
-  s.dependency 'Firebase/AdMob'
+  s.dependency 'Google-Mobile-Ads-SDK'
   s.dependency 'LKFoundation'
 end
