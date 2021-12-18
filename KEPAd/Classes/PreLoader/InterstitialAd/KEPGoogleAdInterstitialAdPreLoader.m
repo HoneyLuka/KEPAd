@@ -12,7 +12,10 @@
 #import "KEPGoogleAdConfig.h"
 #import "KEPGoogleAdRequestCreator.h"
 
-@interface KEPGoogleAdInterstitialAdPreLoader () <GADInterstitialDelegate>
+@interface KEPGoogleAdInterstitialAdPreLoader () <GADFullScreenContentDelegate>
+
+/// 是否正在请求广告的flag
+@property (nonatomic, assign) BOOL adIsRequesting;
 
 @end
 
@@ -28,15 +31,7 @@
 
 - (NSInteger)availableAdCount
 {
-    NSInteger count = 0;
-    for (int i = 0; i < self.queue.count; i++) {
-        GADInterstitial *interstitial = self.queue[i];
-        if (interstitial.isReady) {
-            count++;
-        }
-    }
-    
-    return count;
+    return self.queue.count;
 }
 
 - (void)showInterstitialAdFromViewController:(UIViewController *)viewController
@@ -45,7 +40,7 @@
         return;
     }
     
-    GADInterstitial *interstitial = [self getValidInterstitial];
+    GADInterstitialAd *interstitial = [self getValidInterstitial];
     if (!interstitial) {
         KEPGADIntAdLog(@"no ad to show");
         return;
@@ -60,16 +55,9 @@
     [self fillQueueIfNeeded];
 }
 
-- (GADInterstitial *)getValidInterstitial
+- (GADInterstitialAd *)getValidInterstitial
 {
-    for (int i = 0; i < self.queue.count; i++) {
-        GADInterstitial *interstitial = self.queue[i];
-        if (interstitial.isReady) {
-            return interstitial;
-        }
-    }
-    
-    return nil;
+    return self.queue.firstObject;
 }
 
 - (void)fillQueueIfNeeded
@@ -81,28 +69,32 @@
         return;
     }
     
+    if (self.adIsRequesting) {
+        // is requesting
+        return;
+    }
+    
     // enqueue
-    KEPGADIntAdLog(@"create ad model and enqueue");
+    KEPGADIntAdLog(@"request ad and enqueue");
     
-    GADInterstitial *interstitial = [self createInterstitial];
-    [self.queue addObject:interstitial];
-    
+    self.adIsRequesting = YES;
     GADRequest *request = [KEPGoogleAdRequestCreator createGADRequest];
-    [interstitial loadRequest:request];
-    
-    [self fillQueueIfNeeded];
+    [GADInterstitialAd loadWithAdUnitID:self.unitId request:request completionHandler:^(GADInterstitialAd * _Nullable interstitialAd, NSError * _Nullable error) {
+        self.adIsRequesting = NO;
+        
+        if (error) {
+            [self onRequestFailed:error];
+            return;
+        }
+        
+        [self onReceiveAd:interstitialAd];
+        [self fillQueueIfNeeded];
+    }];
 }
 
-- (void)dequeueInterstitial:(GADInterstitial *)interstitial
+- (void)dequeueInterstitial:(GADInterstitialAd *)interstitial
 {
     [self.queue removeObject:interstitial];
-}
-
-- (GADInterstitial *)createInterstitial
-{
-    GADInterstitial *interstitial = [[GADInterstitial alloc]initWithAdUnitID:self.unitId];
-    interstitial.delegate = self;
-    return interstitial;
 }
 
 - (void)onAdRetry
@@ -112,17 +104,18 @@
 
 #pragma mark - GADInterstitialDelegate
 
-- (void)interstitialDidReceiveAd:(GADInterstitial *)ad
+- (void)onReceiveAd:(GADInterstitialAd *)ad
 {
-    _interstitialErrorCount = 0;
-    
     KEPGADIntAdLog(@"interstitialDidReceiveAd");
+    
+    _interstitialErrorCount = 0;
+    ad.fullScreenContentDelegate = self;
+    [self.queue addObject:ad];
     [self logQueue];
 }
 
-- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error
+- (void)onRequestFailed:(NSError *)error
 {
-    [self dequeueInterstitial:ad];
     _interstitialErrorCount++;
     
     KEPGADIntAdLog(@"didFailToReceiveAdWithError = %@, current error count = %ld",
@@ -144,52 +137,14 @@
     [self startAdRetryTimerWithInterval:interval];
 }
 
-- (void)interstitialWillPresentScreen:(GADInterstitial *)ad
-{
-    KEPGADIntAdLog(@"interstitialWillPresentScreen");
-}
-
-- (void)interstitialDidFailToPresentScreen:(GADInterstitial *)ad
-{
-    KEPGADIntAdLog(@"interstitialDidFailToPresentScreen");
-}
-
-- (void)interstitialWillDismissScreen:(GADInterstitial *)ad
-{
-    KEPGADIntAdLog(@"interstitialWillDismissScreen");
-}
-
-- (void)interstitialDidDismissScreen:(GADInterstitial *)ad
-{
-    KEPGADIntAdLog(@"interstitialDidDismissScreen");
-}
-
-- (void)interstitialWillLeaveApplication:(GADInterstitial *)ad
-{
-    KEPGADIntAdLog(@"interstitialWillLeaveApplication");
-}
-
 - (void)logQueue
 {
     [self logCurrentAdCount];
-    [self logCurrentReadyAdCount];
 }
 
 - (void)logCurrentAdCount
 {
     KEPGADIntAdLog(@"current queue count = %ld", self.queue.count);
-}
-
-- (void)logCurrentReadyAdCount
-{
-    NSInteger readyCount = 0;
-    for (GADInterstitial *inter in self.queue) {
-        if (inter.isReady) {
-            readyCount++;
-        }
-    }
-    
-    KEPGADIntAdLog(@"current queue ready count = %ld", readyCount);
 }
 
 @end
